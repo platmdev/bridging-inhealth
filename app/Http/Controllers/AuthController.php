@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -21,6 +20,7 @@ class AuthController extends Controller
                // Buat sesi atau token login di sini
                csrf_token();
                Auth::login($user);
+               session()->flash('success', 'Logi berhasil.');
                return redirect()->intended('dashboard');
         }
 
