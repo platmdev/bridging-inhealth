@@ -1,23 +1,35 @@
 <?php
 
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\PesertaController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\RoutingController;
 
-Route::get('/', function () {
-    return view('welcome');
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider and all of them will
+| be assigned to the "web" middleware group. Make something great!
+|
+*/
+
+require __DIR__ . '/auth.php';
+
+Route::group(['prefix' => '/', 'middleware' => 'auth'], function () {
+    Route::get('/', fn()=>view('index'))->name('home');
+
+    Route::group(['prefix'=>'/peserta', 'middleware' => 'cors'], function(){
+        Route::get('/eligibilitas',  [PesertaController::class, 'eligibilitas'])->name('eligibilitas');
+        Route::post('/eligibilitas',  [PesertaController::class, 'cekEligibilitas'])->name('submitEligibilitas');
+        Route::get('/daftar-peserta', [PesertaController::class, 'peserta'])->name('daftar-peserta');
+    });
+
+    Route::group(['prefix'=>'/laporan'], function(){
+        Route::get('/rekap-poli', [LaporanController::class, 'rekapPoli'])->name('laporan.rekap-poli');
+    });
 });
 
-Route::middleware(['auth'])->group(function () {
-Route::get('/dashboard', function () {
-    return view('dashboard', ['type_menu' => 'dashboard']);
-});
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/pagination', function () {
-    return view('pagination', ['type_menu' => 'dashboard']);
-});
-});
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
-Route::post('/auth', [AuthController::class, 'login'])->name('auth');
